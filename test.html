@@ -21,6 +21,10 @@
       .clickable-row:hover {
         background-color: #1cea45;
       }
+
+      .detail-row {
+        background-color: #f8f9fa;
+      }
     </style>
   </head>
   <body class="p-4">
@@ -29,78 +33,92 @@
 
       <!-- Tabel Project -->
       <table class="table table-bordered">
-        <thead>
-          <tr class="clickable-row" id="projectBox">
+        <tbody>
+          <!-- Baris Project -->
+          <tr class="clickable-row" data-target="projectDetails">
             <td>Project: Aplikasi Kasir Laravel</td>
           </tr>
-        </thead>
+          <!-- Detail Project -->
+          <tr id="projectDetails" class="detail-row d-none">
+            <td>
+              <p><strong>Creator:</strong> Eightball Creations</p>
+              <p><strong>Created:</strong> 16 Juni 2025</p>
+              <p><strong>Status:</strong> Aktif</p>
+              <p>
+                <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
+                Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
+              </p>
+
+              <!-- Tabel Task -->
+              <table class="table table-bordered mt-3">
+                <tbody>
+                  <tr class="clickable-row" data-target="taskDetails">
+                    <td>Task: Aplikasi Kasir Laravel</td>
+                  </tr>
+                  <tr id="taskDetails" class="detail-row d-none">
+                    <td>
+                      <p><strong>Creator:</strong> Task Eightball Creations</p>
+                      <p><strong>Created:</strong> 16 Juni 2025</p>
+                      <p><strong>Status:</strong> Aktif</p>
+                      <p>
+                        <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
+                        Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
+                      </p>
+
+                      <!-- Tabel Subtask -->
+                      <table class="table table-bordered mt-3">
+                        <tbody>
+                          <tr class="clickable-row" data-target="subtaskDetails">
+                            <td>Subtask: Aplikasi Kasir Laravel</td>
+                          </tr>
+                          <tr id="subtaskDetails" class="detail-row d-none">
+                            <td>
+                              <p><strong>Creator:</strong> Subtask Eightball Creations</p>
+                              <p><strong>Created:</strong> 16 Juni 2025</p>
+                              <p><strong>Status:</strong> Aktif</p>
+                              <p>
+                                <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
+                                Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
+                              </p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <!-- End Subtask -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- End Task -->
+            </td>
+          </tr>
+        </tbody>
       </table>
-
-      <!-- Detail Project -->
-      <div id="projectDetails" class="card card-body mt-3 d-none">
-        <p><strong>Creator:</strong> Eightball Creations</p>
-        <p><strong>Created:</strong> 16 Juni 2025</p>
-        <p><strong>Status:</strong> Aktif</p>
-        <p>
-          <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-          Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-        </p>
-
-        <!-- Task -->
-        <table class="table table-bordered">
-          <thead>
-            <tr class="clickable-row" id="taskBox">
-              <td>Task: Aplikasi Kasir Laravel</td>
-            </tr>
-          </thead>
-        </table>
-
-        <!-- Detail Task -->
-        <div id="taskDetails" class="card card-body mt-3 d-none">
-          <p><strong>Creator:</strong> Task Eightball Creations</p>
-          <p><strong>Created:</strong> 16 Juni 2025</p>
-          <p><strong>Status:</strong> Aktif</p>
-          <p>
-            <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-            Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-          </p>
-
-          <!-- Subtask -->
-          <table class="table table-bordered">
-            <thead>
-              <tr class="clickable-row" id="subtaskBox">
-                <td>Subtask: Aplikasi Kasir Laravel</td>
-              </tr>
-            </thead>
-          </table>
-
-          <!-- Detail Subtask -->
-          <div id="subtaskDetails" class="card card-body mt-3 d-none">
-            <p><strong>Creator:</strong> Subtask Eightball Creations</p>
-            <p><strong>Created:</strong> 16 Juni 2025</p>
-            <p><strong>Status:</strong> Aktif</p>
-            <p>
-              <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-              Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
+    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Toggle script -->
+    <!-- Toggle dengan auto-close -->
     <script>
-      document.getElementById("projectBox").addEventListener("click", function () {
-        document.getElementById("projectDetails").classList.toggle("d-none");
-      });
-      document.getElementById("taskBox").addEventListener("click", function () {
-        document.getElementById("taskDetails").classList.toggle("d-none");
-      });
-      document.getElementById("subtaskBox").addEventListener("click", function () {
-        document.getElementById("subtaskDetails").classList.toggle("d-none");
+      document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function () {
+          const targetId = this.dataset.target;
+          const target = document.getElementById(targetId);
+
+          // Tutup semua detail lainnya pada level yang sama
+          const siblings = Array.from(this.parentElement.children);
+          siblings.forEach(tr => {
+            if (tr.id && tr.id !== targetId && tr.classList.contains('detail-row')) {
+              tr.classList.add('d-none');
+            }
+          });
+
+          // Toggle elemen target
+          if (target) {
+            target.classList.toggle('d-none');
+          }
+        });
       });
     </script>
   </body>
