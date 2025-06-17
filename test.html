@@ -1,124 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Data Project</title>
-
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
+    <meta charset="UTF-8" />
+    <title>Project Management Systems</title>
     <style>
-      .clickable-row {
-        cursor: pointer;
-        background-color: #42e88d;
-        color: white;
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        background-color: #f5f5f5;
       }
 
-      .clickable-row:hover {
-        background-color: #1cea45;
+      .header-bar {
+        max-width: 1000px;
+        margin: 0 auto 10px auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .timestamp {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .header-bar h2 {
+        flex: 1;
+        text-align: center;
+        margin: 0;
+      }
+
+      /* Tombol modal di kanan header */
+      #openModalBtn {
+        padding: 8px 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .table-wrapper {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+      }
+
+      thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+      }
+
+      tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 10px;
+      }
+
+      tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 10px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        /* border-bottom: 1px solid #ddd; */
+        text-align: left;
+      }
+
+      thead {
+        background-color: #f9f9f9;
+      }
+
+      .project-row {
+        background-color: #d4edda;
+        cursor: pointer;
+      }
+
+      .task-row {
+        background-color: #d4edda;
+        cursor: pointer;
       }
 
       .detail-row {
-        background-color: #f8f9fa;
+        display: none;
+        background-color: #fdfdfd;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: white;
+        background-color: green;
+      }
+
+      .inner-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .inner-table th,
+      .inner-table td {
+        padding: 6px;
+        /* border-bottom: 1px solid #ccc; */
+      }
+
+      /* Modal Styles */
+      #projectModal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      #projectModal .modal-content {
+        background-color: white;
+        margin: 80px auto;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        position: relative;
+      }
+
+      #projectModal h3 {
+        margin-top: 0;
+        text-align: center;
+      }
+
+      #projectModal label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: bold;
+      }
+
+      #projectModal input[type="text"],
+      #projectModal input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      #projectModal .modal-actions {
+        text-align: right;
+      }
+
+      #projectModal button.cancel-btn {
+        background-color: #ccc;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+
+      #projectModal button.submit-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
       }
     </style>
   </head>
-  <body class="p-4">
-    <div class="container">
-      <h1 class="mb-4">Data Project</h1>
+  <body>
+    <!-- Header di luar tabel -->
+    <div class="header-bar">
+      <div class="timestamp" id="timestamp">Refreshed:</div>
+      <h2>Project Management Systems</h2>
+      <button id="openModalBtn">Tambah Proyek</button>
+    </div>
 
-      <!-- Tabel Project -->
-      <table class="table table-bordered">
-        <tbody>
-          <!-- Baris Project -->
-          <tr class="clickable-row" data-target="projectDetails">
-            <td>Project: Aplikasi Kasir Laravel</td>
+    <!-- Tabel dibungkus emboss -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Project Name</th>
+            <th>Manager ID</th>
+            <th>Start</th>
+            <th>End</th>
           </tr>
-          <!-- Detail Project -->
-          <tr id="projectDetails" class="detail-row d-none">
-            <td>
-              <p><strong>Creator:</strong> Eightball Creations</p>
-              <p><strong>Created:</strong> 16 Juni 2025</p>
-              <p><strong>Status:</strong> Aktif</p>
-              <p>
-                <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-                Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-              </p>
+        </thead>
+        <tbody>
+          <tr class="project-row" data-id="1">
+            <td style="border-bottom: 1px solid #ddd">Man Power Request</td>
+            <td style="border-bottom: 1px solid #ddd">23150921</td>
+            <td style="border-bottom: 1px solid #ddd">2025-06-01</td>
+            <td style="border-bottom: 1px solid #ddd">2025-06-30</td>
+          </tr>
+          <tr class="detail-row" id="detail-1">
+            <td colspan="4">
+              <strong>Project Type:</strong> Systems<br />
+              <strong>Description:</strong> Pembuatan Sistem HR-MPR<br />
+              <strong>Status:</strong> <span class="badge">Approved</span
+              ><br /><br />
 
-              <!-- Tabel Task -->
-              <table class="table table-bordered mt-3">
-                <tbody>
-                  <tr class="clickable-row" data-target="taskDetails">
-                    <td>Task: Aplikasi Kasir Laravel</td>
+              <table class="inner-table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Created</th>
+                    <th>Deadline</th>
+                    <th>PIC</th>
                   </tr>
-                  <tr id="taskDetails" class="detail-row d-none">
-                    <td>
-                      <p><strong>Creator:</strong> Task Eightball Creations</p>
-                      <p><strong>Created:</strong> 16 Juni 2025</p>
-                      <p><strong>Status:</strong> Aktif</p>
-                      <p>
-                        <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-                        Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-                      </p>
-
-                      <!-- Tabel Subtask -->
-                      <table class="table table-bordered mt-3">
-                        <tbody>
-                          <tr class="clickable-row" data-target="subtaskDetails">
-                            <td>Subtask: Aplikasi Kasir Laravel</td>
-                          </tr>
-                          <tr id="subtaskDetails" class="detail-row d-none">
-                            <td>
-                              <p><strong>Creator:</strong> Subtask Eightball Creations</p>
-                              <p><strong>Created:</strong> 16 Juni 2025</p>
-                              <p><strong>Status:</strong> Aktif</p>
-                              <p>
-                                <strong>Keterangan:</strong> Aplikasi kasir berbasis Laravel dan
-                                Livewire, terintegrasi Midtrans, PWA, dan Bluetooth printer.
-                              </p>
-                            </td>
-                          </tr>
-                        </tbody>
+                </thead>
+                <tbody>
+                  <tr class="task-row" data-task="1">
+                    <td>KIAS-PC-0001</td>
+                    <td>2025-06-19</td>
+                    <td>2025-06-20</td>
+                    <td>PIC</td>
+                  </tr>
+                  <tr class="detail-row" id="task-detail-1">
+                    <td colspan="4">
+                      <strong>Accept Date:</strong> -<br />
+                      <strong>Status:</strong> Pending<br />
+                      <strong>Keterangan:</strong> -<br />
+                      <strong>Comment:</strong> -<br /><br />
+                      <strong>Sub Task:</strong>
+                      <table class="inner-table">
+                        <tr>
+                          <td>KIAS-PC-0001</td>
+                          <td>Pending</td>
+                        </tr>
                       </table>
-                      <!-- End Subtask -->
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <!-- End Task -->
+            </td>
+          </tr>
+          <tr class="project-row" data-id="2">
+            <td style="border-bottom: 1px solid #ddd">Man Power 1</td>
+            <td style="border-bottom: 1px solid #ddd">23150921</td>
+            <td style="border-bottom: 1px solid #ddd">2025-06-01</td>
+            <td style="border-bottom: 1px solid #ddd">2025-06-30</td>
+          </tr>
+          <tr class="detail-row" id="detail-2">
+            <td colspan="4">
+              <strong>Project Type:</strong> Systems<br />
+              <strong>Description:</strong> Pembuatan Sistem HR-MPR<br />
+              <strong>Status:</strong> <span class="badge">Approved</span
+              ><br /><br />
+
+              <table class="inner-table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Created</th>
+                    <th>Deadline</th>
+                    <th>PIC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="task-row" data-task="2">
+                    <td>KIAS-PC-0001</td>
+                    <td>2025-06-19</td>
+                    <td>2025-06-20</td>
+                    <td>PIC</td>
+                  </tr>
+                  <tr class="detail-row" id="task-detail-2">
+                    <td colspan="4">
+                      <strong>Accept Date:</strong> -<br />
+                      <strong>Status:</strong> Pending<br />
+                      <strong>Keterangan:</strong> -<br />
+                      <strong>Comment:</strong> -<br /><br />
+                      <strong>Sub Task:</strong>
+                      <table class="inner-table">
+                        <tr>
+                          <td>KIAS-PC-0001</td>
+                          <td>Pending</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal -->
+    <div id="projectModal">
+      <div class="modal-content">
+        <h3>Tambah Proyek Baru</h3>
+        <form id="projectForm">
+          <label for="projectName">Project Name:</label>
+          <input type="text" id="projectName" name="projectName" required />
 
-    <!-- Toggle dengan auto-close -->
+          <label for="managerId">Manager ID:</label>
+          <input type="text" id="managerId" name="managerId" required />
+
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" name="startDate" required />
+
+          <label for="endDate">End Date:</label>
+          <input type="date" id="endDate" name="endDate" required />
+          <label for="projectName">Project Name:</label>
+          <input type="text" id="projectName" name="projectName" required />
+
+          <label for="managerId">Manager ID:</label>
+          <input type="text" id="managerId" name="managerId" required />
+
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" name="startDate" required />
+
+          <label for="endDate">End Date:</label>
+          <input type="date" id="endDate" name="endDate" required />
+          <label for="managerId">Manager ID:</label>
+          <input type="text" id="managerId" name="managerId" required />
+
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" name="startDate" required />
+
+          <label for="endDate">End Date:</label>
+          <input type="date" id="endDate" name="endDate" required />
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" id="cancelBtn">
+              Cancel
+            </button>
+            <button type="submit" class="submit-btn">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
-      document.querySelectorAll('.clickable-row').forEach(row => {
-        row.addEventListener('click', function () {
-          const targetId = this.dataset.target;
-          const target = document.getElementById(targetId);
+      // Update timestamp sekarang
+      function updateTimestamp() {
+        const now = new Date();
+        const tanggal = now.toLocaleDateString("id-ID");
+        const jam = now.toLocaleTimeString("id-ID");
+        document.getElementById(
+          "timestamp"
+        ).textContent = `Refreshed: ${tanggal} ${jam}`;
+      }
+      updateTimestamp();
 
-          // Tutup semua detail lainnya pada level yang sama
-          const siblings = Array.from(this.parentElement.children);
-          siblings.forEach(tr => {
-            if (tr.id && tr.id !== targetId && tr.classList.contains('detail-row')) {
-              tr.classList.add('d-none');
-            }
-          });
-
-          // Toggle elemen target
-          if (target) {
-            target.classList.toggle('d-none');
-          }
+      // Expand/collapse project detail
+      document.querySelectorAll(".project-row").forEach((row) => {
+        row.addEventListener("click", () => {
+          const id = row.dataset.id;
+          const detail = document.getElementById("detail-" + id);
+          const isVisible = detail.style.display === "table-row";
+          document
+            .querySelectorAll(".detail-row")
+            .forEach((el) => (el.style.display = "none"));
+          if (!isVisible) detail.style.display = "table-row";
         });
+      });
+
+      // Expand/collapse task detail
+      document.querySelectorAll(".task-row").forEach((row) => {
+        row.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = row.dataset.task;
+          const detail = document.getElementById("task-detail-" + id);
+          const isVisible = detail.style.display === "table-row";
+          document
+            .querySelectorAll(".task-detail")
+            .forEach((el) => (el.style.display = "none"));
+          if (!isVisible) detail.style.display = "table-row";
+        });
+      });
+
+      // Buka modal
+      document.getElementById("openModalBtn").addEventListener("click", () => {
+        document.getElementById("projectModal").style.display = "block";
+      });
+
+      // Tutup modal
+      document.getElementById("cancelBtn").addEventListener("click", () => {
+        document.getElementById("projectModal").style.display = "none";
+      });
+
+      // Tutup modal klik di luar konten modal
+      window.addEventListener("click", (e) => {
+        const modal = document.getElementById("projectModal");
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+
+      // Tangani submit form (contoh hanya alert data dan close modal)
+      document.getElementById("projectForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          projectName: form.projectName.value,
+          managerId: form.managerId.value,
+          startDate: form.startDate.value,
+          endDate: form.endDate.value,
+        };
+        alert("Data Proyek:\n" + JSON.stringify(data, null, 2));
+        // Bisa tambahkan kode AJAX untuk submit ke server disini
+        form.reset();
+        document.getElementById("projectModal").style.display = "none";
       });
     </script>
   </body>
